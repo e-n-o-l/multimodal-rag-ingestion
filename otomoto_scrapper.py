@@ -14,7 +14,7 @@ def fetch_soup(url: str) -> BeautifulSoup | None:
         res = requests.get(url, headers=HEADERS, timeout=10)
         return BeautifulSoup(res.text, "html.parser") if res.status_code == 200 else None
     except Exception as e:
-        print(f"Błąd pobierania {url}: {e}")
+        print(f"website loading error {url}: {e}")
         return None
 
 
@@ -33,7 +33,7 @@ def extract_ad_data(soup: BeautifulSoup) -> dict:
                         return parsed["advert"]
         return ad_data
     except Exception as e:
-        print(f"Błąd JSON: {e}")
+        print(f"JSON Error: {e}")
         return {}
 
 
@@ -61,17 +61,17 @@ def download_images(photo_urls: list[str]) -> list[Image.Image]:
             if res.status_code == 200:
                 images.append(Image.open(io.BytesIO(res.content)).convert("RGB"))
         except Exception as e:
-            print(f"Błąd pobierania zdjęcia {url}: {e}")
+            print(f"photo loading error {url}: {e}")
     return images
 
 
-def scrape_otomoto_offer(url: str, max_photos: int = 5) -> tuple[list[Image.Image], str, str] | None:
+def scrape_otomoto_offer(url: str, max_photos: int = 5) -> tuple[list[Image.Image], str] | None:
     soup = fetch_soup(url)
     if not soup:
         return None
     ad_data = extract_ad_data(soup)
     photo_urls = parse_photo_urls(ad_data, max_photos)
-    return download_images(photo_urls), extract_clean_text(soup), url
+    return download_images(photo_urls), extract_clean_text(soup)
 
 
 def get_offer_urls_from_page(page_num: int) -> list[str]:
