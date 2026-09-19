@@ -74,10 +74,10 @@ def scrape_otomoto_offer(url: str, max_photos: int = 5) -> tuple[list[Image.Imag
     return download_images(photo_urls), extract_clean_text(soup)
 
 
-def get_offer_urls_from_page(page_num: int) -> list[str]:
+def get_offer_urls_from_page(page_num: int) -> set[str]:
     soup = fetch_soup(f"https://www.otomoto.pl/osobowe?page={page_num}")
     if not soup:
-        return []
-    return list(dict.fromkeys(
+        return set()
+    return set(dict.fromkeys(
         a["href"] for a in soup.find_all("a", href=True) if "/oferta/" in a["href"]
     ))

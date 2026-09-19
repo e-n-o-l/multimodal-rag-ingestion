@@ -39,6 +39,7 @@ class OtomotoChunkedDataset(Dataset):
         self.buffer = []
         self.buffer_start_idx = 0
 
+        self.unique_urls = set()
         self.pending_urls = []
         self.current_page = start_page
         self.buffer = []
@@ -57,9 +58,16 @@ class OtomotoChunkedDataset(Dataset):
             if not self.pending_urls:
                 for i in range(self.pages_per_fetch):
                     new_urls = get_offer_urls_from_page(self.current_page + i)
+
+                    new_urls.difference_update(self.unique_urls)
+
                     self.pending_urls.extend(new_urls)
 
+                    self.unique_urls.update(new_urls)
+
+
                 self.current_page += self.pages_per_fetch
+
 
                 if not self.pending_urls:
                     break
